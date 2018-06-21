@@ -1,3 +1,6 @@
 {
-  "name": "vertx"
+  "web_app": {
+    "name": "mat",
+    "http_port": 8080
+  }
 }

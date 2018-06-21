@@ -10,7 +10,7 @@
     <version>0.0.1-SNAPSHOT</version>
 
     <properties>
-        <main.verticle>org.emkor.fdb.HelloWorldVerticle</main.verticle>
+        <main.verticle>org.emkor.fdb.MainApp</main.verticle>
     </properties>
 
     <dependencies>
