@@ -3,10 +3,13 @@ package org.emkor.fdb.model;
 import java.time.OffsetDateTime;
 
 public class FdbEvent {
-    protected final OffsetDateTime creationDateTime;
+    protected OffsetDateTime creationDateTime;
 
-    public FdbEvent(OffsetDateTime creationDateTime) {
+    protected FdbEvent(OffsetDateTime creationDateTime) {
         this.creationDateTime = creationDateTime;
+    }
+
+    protected FdbEvent() {
     }
 
     public OffsetDateTime getCreationDateTime() {

@@ -6,9 +6,10 @@ import java.util.Objects;
 
 
 public class InotifyEvent extends FdbEvent {
-    private final Path filePath;
+    private Path filePath;
+    private InotifyEventType eventType;
 
-    private final InotifyEventType eventType;
+    public InotifyEvent() {}
 
     public InotifyEvent(OffsetDateTime creationDateTime, Path filePath, InotifyEventType eventType) {
         super(creationDateTime);
