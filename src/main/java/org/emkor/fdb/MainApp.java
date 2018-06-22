@@ -10,6 +10,7 @@ public class MainApp extends AbstractVerticle {
     public void start() {
         JsonObject globalConfig = loadConfig();
         deployWebApp(globalConfig);
+        vertx.deployVerticle(new FileUpdateHandlerVerticle());
         vertx.deployVerticle(new FileWatcherVerticle(), new DeploymentOptions().setWorker(true));
     }
 
