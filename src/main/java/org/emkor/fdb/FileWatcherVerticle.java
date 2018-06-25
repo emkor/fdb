@@ -11,6 +11,7 @@ import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import io.vertx.core.AbstractVerticle;
+import io.vertx.core.json.JsonObject;
 import org.emkor.fdb.codec.InotifyEventMsgPackCodec;
 import org.emkor.fdb.model.InotifyEvent;
 import org.emkor.fdb.model.InotifyEventType;
@@ -19,7 +20,6 @@ import org.msgpack.jackson.dataformat.MessagePackFactory;
 
 
 public class FileWatcherVerticle extends AbstractVerticle {
-    private static final String DEFAULT_LOCATION = "/home/mat/Downloads/img_size";
     private static final Map<WatchEvent.Kind<Path>, InotifyEventType> watchEventToEventMap = new HashMap<>();
 
     static {
@@ -31,10 +31,11 @@ public class FileWatcherVerticle extends AbstractVerticle {
     private InotifyEventMsgPackCodec codec = null;
     private WatchService watcher = null;
     private Map<WatchKey, Path> watchKeys = new HashMap<>();
-    private List<String> watchDirs = Collections.singletonList(DEFAULT_LOCATION);
+    private List<String> watchDirs = new ArrayList<>();
 
     @Override
     public void start() {
+        watchDirs = readWatchedDirsConfig();
         codec = new InotifyEventMsgPackCodec(new ObjectMapper(new MessagePackFactory())
                 .registerModule(new ParameterNamesModule())
                 .registerModule(new Jdk8Module())
@@ -46,6 +47,11 @@ public class FileWatcherVerticle extends AbstractVerticle {
         } catch (ClosedWatchServiceException | IOException exc) {
             exc.printStackTrace();
         }
+    }
+
+    private List<String> readWatchedDirsConfig() {
+        JsonObject config = config();
+        return (List<String>) config.getJsonArray("watched_directories").getList();
     }
 
     private void pollInotifyPeriodically() {

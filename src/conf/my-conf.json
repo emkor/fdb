@@ -2,5 +2,8 @@
   "web_app": {
     "name": "mat",
     "http_port": 8080
+  },
+  "inotify_watcher": {
+    "watched_directories": ["/home/mat/Downloads/img_size"]
   }
 }
