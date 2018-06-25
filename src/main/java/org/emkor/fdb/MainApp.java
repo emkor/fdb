@@ -21,9 +21,9 @@ public class MainApp extends AbstractVerticle {
     }
 
     private void deployWebApp(JsonObject globalConfig) {
-        System.out.println("Deploying HelloWorldVerticle...");
+        System.out.println("Deploying DummyWebAppVerticle...");
         DeploymentOptions webAppOptions = new DeploymentOptions().setConfig(globalConfig.getJsonObject("web_app"));
-        vertx.deployVerticle(new HelloWorldVerticle(), webAppOptions);
+        vertx.deployVerticle(new DummyWebAppVerticle(), webAppOptions);
     }
 
     @Override

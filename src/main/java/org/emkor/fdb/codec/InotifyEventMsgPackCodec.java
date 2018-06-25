@@ -14,21 +14,21 @@ public class InotifyEventMsgPackCodec {
         this.mapper = mapper;
     }
 
-    public byte[] serialize(InotifyEvent event) throws SerializationException {
+    public byte[] serialize(InotifyEvent event) {
         try {
             return this.mapper.writeValueAsBytes(event);
         } catch (JsonProcessingException e) {
             e.printStackTrace();
-            throw new SerializationException();
+            throw new SerializationException(e.getMessage());
         }
     }
 
-    public InotifyEvent deserialize(byte[] bytes) throws SerializationException {
+    public InotifyEvent deserialize(byte[] bytes) {
         try {
             return this.mapper.readValue(bytes, InotifyEvent.class);
         } catch (IOException e) {
             e.printStackTrace();
-            throw new SerializationException();
+            throw new SerializationException(e.getMessage());
         }
     }
 }

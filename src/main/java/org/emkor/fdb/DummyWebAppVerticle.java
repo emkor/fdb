@@ -2,7 +2,7 @@ package org.emkor.fdb;
 
 import io.vertx.core.AbstractVerticle;
 
-public class HelloWorldVerticle extends AbstractVerticle {
+public class DummyWebAppVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
