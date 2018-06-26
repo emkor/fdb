@@ -4,6 +4,8 @@
     "http_port": 8080
   },
   "inotify_watcher": {
-    "watched_directories": ["/home/mat/Downloads/img_size"]
+    "watched_directories": ["/home/mat/Downloads/img_size"],
+    "tmp_directory": "/home/mat/.fdb/tmp",
+    "storage_directory": "/home/mat/.fdb/storage"
   }
 }

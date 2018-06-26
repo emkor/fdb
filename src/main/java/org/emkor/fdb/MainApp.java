@@ -10,13 +10,19 @@ public class MainApp extends AbstractVerticle {
     public void start() {
         JsonObject globalConfig = loadConfig();
         deployWebApp(globalConfig);
-        vertx.deployVerticle(new FileUpdateHandlerVerticle());
+        deployFileUpdateHandler(globalConfig);
         deployFileWatcher(globalConfig);
     }
 
+    private void deployFileUpdateHandler(JsonObject globalConfig) {
+        vertx.deployVerticle(
+                new FileUpdateHandlerVerticle(),
+                new DeploymentOptions().setConfig(globalConfig.getJsonObject("inotify_watcher")));
+    }
+
     private void deployFileWatcher(JsonObject globalConfig) {
-        DeploymentOptions fileWatcherConfig = new DeploymentOptions().setConfig(globalConfig
-                .getJsonObject("inotify_watcher"))
+        DeploymentOptions fileWatcherConfig = new DeploymentOptions()
+                .setConfig(globalConfig.getJsonObject("inotify_watcher"))
                 .setWorker(true);
         vertx.deployVerticle(new FileWatcherVerticle(), fileWatcherConfig);
     }
