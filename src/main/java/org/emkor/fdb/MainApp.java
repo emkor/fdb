@@ -3,6 +3,9 @@ package org.emkor.fdb;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
 import io.vertx.core.json.JsonObject;
+import org.emkor.fdb.verticle.DummyWebApp;
+import org.emkor.fdb.verticle.FileUpdateHandler;
+import org.emkor.fdb.verticle.FileWatcher;
 
 public class MainApp extends AbstractVerticle {
 
@@ -16,7 +19,7 @@ public class MainApp extends AbstractVerticle {
 
     private void deployFileUpdateHandler(JsonObject globalConfig) {
         vertx.deployVerticle(
-                new FileUpdateHandlerVerticle(),
+                new FileUpdateHandler(),
                 new DeploymentOptions().setConfig(globalConfig.getJsonObject("inotify_watcher")));
     }
 
@@ -24,7 +27,7 @@ public class MainApp extends AbstractVerticle {
         DeploymentOptions fileWatcherConfig = new DeploymentOptions()
                 .setConfig(globalConfig.getJsonObject("inotify_watcher"))
                 .setWorker(true);
-        vertx.deployVerticle(new FileWatcherVerticle(), fileWatcherConfig);
+        vertx.deployVerticle(new FileWatcher(), fileWatcherConfig);
     }
 
     private JsonObject loadConfig() {
@@ -34,9 +37,9 @@ public class MainApp extends AbstractVerticle {
     }
 
     private void deployWebApp(JsonObject globalConfig) {
-        System.out.println("Deploying DummyWebAppVerticle...");
+        System.out.println("Deploying DummyWebApp...");
         DeploymentOptions webAppOptions = new DeploymentOptions().setConfig(globalConfig.getJsonObject("web_app"));
-        vertx.deployVerticle(new DummyWebAppVerticle(), webAppOptions);
+        vertx.deployVerticle(new DummyWebApp(), webAppOptions);
     }
 
     @Override

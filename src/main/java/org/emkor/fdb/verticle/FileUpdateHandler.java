@@ -1,4 +1,4 @@
-package org.emkor.fdb;
+package org.emkor.fdb.verticle;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -22,7 +22,7 @@ import java.nio.file.Paths;
 import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 
-public class FileUpdateHandlerVerticle extends AbstractVerticle {
+public class FileUpdateHandler extends AbstractVerticle {
     private InotifyEventMsgPackCodec codec = new InotifyEventMsgPackCodec(new ObjectMapper(new MessagePackFactory())
             .registerModule(new ParameterNamesModule())
             .registerModule(new Jdk8Module())
@@ -32,7 +32,7 @@ public class FileUpdateHandlerVerticle extends AbstractVerticle {
     @Override
     public void start() {
         tmpDirectory = initializeTmpDirectory();
-        System.out.println("Deploying FileUpdateHandlerVerticle with " + tmpDirectory + " as temporary directory");
+        System.out.println("Deploying FileUpdateHandler with " + tmpDirectory + " as temporary directory");
         vertx.eventBus().consumer(QueueAddress.inotify, (Handler<Message<byte[]>>) message -> {
             handleInotifyEvent(message);
         });
@@ -75,7 +75,7 @@ public class FileUpdateHandlerVerticle extends AbstractVerticle {
 
     @Override
     public void stop() {
-        System.out.println("Stopped FileUpdateHandlerVerticle!");
+        System.out.println("Stopped FileUpdateHandler!");
     }
 
 }

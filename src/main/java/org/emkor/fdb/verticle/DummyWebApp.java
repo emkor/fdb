@@ -1,8 +1,8 @@
-package org.emkor.fdb;
+package org.emkor.fdb.verticle;
 
 import io.vertx.core.AbstractVerticle;
 
-public class DummyWebAppVerticle extends AbstractVerticle {
+public class DummyWebApp extends AbstractVerticle {
 
     @Override
     public void start() {
