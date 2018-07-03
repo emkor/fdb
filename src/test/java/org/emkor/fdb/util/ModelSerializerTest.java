@@ -1,4 +1,4 @@
-package org.emkor.fdb.codec;
+package org.emkor.fdb.util;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;

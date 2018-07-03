@@ -1,4 +1,4 @@
-package org.emkor.fdb.codec;
+package org.emkor.fdb.util;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;

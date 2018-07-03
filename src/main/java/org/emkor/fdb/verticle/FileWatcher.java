@@ -2,7 +2,6 @@ package org.emkor.fdb.verticle;
 
 import java.io.IOException;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
@@ -13,7 +12,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.json.JsonObject;
-import org.emkor.fdb.codec.ModelSerializer;
+import org.emkor.fdb.util.ModelSerializer;
 import org.emkor.fdb.model.InotifyEvent;
 import org.emkor.fdb.model.InotifyEventType;
 import org.emkor.fdb.model.QueueAddress;
@@ -112,11 +111,6 @@ public class FileWatcher extends AbstractVerticle {
     private InotifyEvent buildEvent(Path directory, WatchEvent<Path> watchEvent, WatchEvent.Kind<Path> kind) {
         Path fullPath = Paths.get(directory.toString(), watchEvent.context().toString());
         InotifyEventType eventType = watchEventToEventMap.get(kind);
-        try {
-            BasicFileAttributes attr = Files.readAttributes(fullPath, BasicFileAttributes.class);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
         return new InotifyEvent(OffsetDateTime.now(ZoneOffset.UTC), fullPath, eventType);
     }
 
