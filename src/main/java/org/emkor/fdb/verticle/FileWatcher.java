@@ -13,7 +13,7 @@ import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.json.JsonObject;
-import org.emkor.fdb.codec.InotifyEventMsgPackCodec;
+import org.emkor.fdb.codec.ModelSerializer;
 import org.emkor.fdb.model.InotifyEvent;
 import org.emkor.fdb.model.InotifyEventType;
 import org.emkor.fdb.model.QueueAddress;
@@ -29,7 +29,7 @@ public class FileWatcher extends AbstractVerticle {
         watchEventToEventMap.put(StandardWatchEventKinds.ENTRY_MODIFY, InotifyEventType.UPDATE);
     }
 
-    private InotifyEventMsgPackCodec codec = null;
+    private ModelSerializer<InotifyEvent> codec = null;
     private WatchService watcher = null;
     private Map<WatchKey, Path> watchKeys = new HashMap<>();
     private List<String> watchDirs = new ArrayList<>();
@@ -37,10 +37,10 @@ public class FileWatcher extends AbstractVerticle {
     @Override
     public void start() {
         watchDirs = readWatchedDirsConfig();
-        codec = new InotifyEventMsgPackCodec(new ObjectMapper(new MessagePackFactory())
+        codec = new ModelSerializer<>(new ObjectMapper(new MessagePackFactory())
                 .registerModule(new ParameterNamesModule())
                 .registerModule(new Jdk8Module())
-                .registerModule(new JavaTimeModule()));
+                .registerModule(new JavaTimeModule()), InotifyEvent.class);
         try {
             watcher = FileSystems.getDefault().newWatchService();
             registerWatchers();

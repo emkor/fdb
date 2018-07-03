@@ -15,17 +15,17 @@ import java.time.ZoneOffset;
 
 import static org.junit.Assert.*;
 
-public class InotifyEventMsgPackCodecTest {
+public class ModelSerializerTest {
     private ObjectMapper mapper = new ObjectMapper(new MessagePackFactory())
             .registerModule(new ParameterNamesModule())
             .registerModule(new Jdk8Module())
             .registerModule(new JavaTimeModule());
-    private InotifyEventMsgPackCodec codec = null;
+    private ModelSerializer<InotifyEvent> codec = null;
     private InotifyEvent event = null;
 
     @org.junit.Before
     public void setUp() throws Exception {
-        codec = new InotifyEventMsgPackCodec(mapper);
+        codec = new ModelSerializer<>(mapper, InotifyEvent.class);
         event = new InotifyEvent(OffsetDateTime.now(ZoneOffset.UTC), Paths.get("/some/file.txt"), InotifyEventType.CREATE);
     }
 

@@ -7,7 +7,7 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Handler;
 import io.vertx.core.eventbus.Message;
-import org.emkor.fdb.codec.InotifyEventMsgPackCodec;
+import org.emkor.fdb.codec.ModelSerializer;
 import org.emkor.fdb.model.InotifyEvent;
 import org.emkor.fdb.model.QueueAddress;
 import org.emkor.fdb.model.SerializationException;
@@ -23,10 +23,10 @@ import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 
 public class FileUpdateHandler extends AbstractVerticle {
-    private InotifyEventMsgPackCodec codec = new InotifyEventMsgPackCodec(new ObjectMapper(new MessagePackFactory())
+    private ModelSerializer<InotifyEvent> codec = new ModelSerializer<>(new ObjectMapper(new MessagePackFactory())
             .registerModule(new ParameterNamesModule())
             .registerModule(new Jdk8Module())
-            .registerModule(new JavaTimeModule()));
+            .registerModule(new JavaTimeModule()), InotifyEvent.class);
     private String tmpDirectory = null;
 
     @Override
