@@ -5,6 +5,7 @@ import java.nio.file.*;
 import java.time.OffsetDateTime;
 import java.time.ZoneOffset;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jdk8.Jdk8Module;
@@ -84,15 +85,9 @@ public class FileWatcher extends AbstractVerticle {
                 continue;
             }
 
-            for (WatchEvent<?> event : watchKey.pollEvents()) {
-                WatchEvent<Path> watchEvent = (WatchEvent<Path>) event;
-                WatchEvent.Kind<Path> kind = watchEvent.kind();
-
-                if (kind.name().equals(StandardWatchEventKinds.OVERFLOW.name())) {
-                    continue;
-                }
-                InotifyEvent fdbEvent = buildEvent(dir, watchEvent, kind);
-                vertx.eventBus().publish(QueueAddress.inotify, codec.serialize(fdbEvent));
+            List<InotifyEvent> unfilteredEvents = collectInotifyEvents(watchKey, dir);
+            for (InotifyEvent e : selectLastEventPerFile(unfilteredEvents)) {
+                vertx.eventBus().publish(QueueAddress.inotify, codec.serialize(e));
             }
 
             //Reset the watchKey -- this step is critical if you want to receive
@@ -106,6 +101,29 @@ public class FileWatcher extends AbstractVerticle {
                 }
             }
         }
+    }
+
+    private List<InotifyEvent> collectInotifyEvents(WatchKey watchKey, Path dir) {
+        List<InotifyEvent> unfilteredEvents = new ArrayList<>();
+        for (WatchEvent<?> event : watchKey.pollEvents()) {
+            WatchEvent<Path> watchEvent = (WatchEvent<Path>) event;
+            WatchEvent.Kind<Path> kind = watchEvent.kind();
+            if (kind.name().equals(StandardWatchEventKinds.OVERFLOW.name())) {
+                continue;
+            }
+            unfilteredEvents.add(buildEvent(dir, watchEvent, kind));
+        }
+        return unfilteredEvents;
+    }
+
+    private List<InotifyEvent> selectLastEventPerFile(List<InotifyEvent> events) {
+        Map<Path, List<InotifyEvent>> fileToEventsMap = events.stream().collect(Collectors.groupingBy(InotifyEvent::getFilePath));
+        List<InotifyEvent> filteredEvents = new ArrayList<>();
+        for (Map.Entry<Path, List<InotifyEvent>> entry : fileToEventsMap.entrySet()) {
+            InotifyEvent lastEvent = entry.getValue().get(entry.getValue().size() - 1);
+            filteredEvents.add(lastEvent);
+        }
+        return filteredEvents;
     }
 
     private InotifyEvent buildEvent(Path directory, WatchEvent<Path> watchEvent, WatchEvent.Kind<Path> kind) {
