@@ -21,12 +21,11 @@ import org.msgpack.jackson.dataformat.MessagePackFactory;
 
 
 public class FileWatcher extends AbstractVerticle {
-    private static final Map<WatchEvent.Kind<Path>, InotifyEventType> watchEventToEventMap = new HashMap<>();
+    private static final Map<WatchEvent.Kind<Path>, InotifyEventType> inotifyEventToFdbEventTypeMap = new HashMap<>();
 
     static {
-        watchEventToEventMap.put(StandardWatchEventKinds.ENTRY_CREATE, InotifyEventType.CREATE);
-        watchEventToEventMap.put(StandardWatchEventKinds.ENTRY_DELETE, InotifyEventType.DELETE);
-        watchEventToEventMap.put(StandardWatchEventKinds.ENTRY_MODIFY, InotifyEventType.UPDATE);
+        inotifyEventToFdbEventTypeMap.put(StandardWatchEventKinds.ENTRY_CREATE, InotifyEventType.CREATE);
+        inotifyEventToFdbEventTypeMap.put(StandardWatchEventKinds.ENTRY_MODIFY, InotifyEventType.UPDATE);
     }
 
     private ModelSerializer<InotifyEvent> codec = null;
@@ -68,8 +67,8 @@ public class FileWatcher extends AbstractVerticle {
     private void registerWatchers() throws IOException {
         for (String dir : watchDirs) {
             Path dirPath = Paths.get(dir);
-            WatchKey dirKey = dirPath.register(watcher, StandardWatchEventKinds.ENTRY_CREATE,
-                    StandardWatchEventKinds.ENTRY_DELETE, StandardWatchEventKinds.ENTRY_MODIFY);
+            WatchKey dirKey = dirPath.register(watcher,
+                    StandardWatchEventKinds.ENTRY_CREATE, StandardWatchEventKinds.ENTRY_MODIFY);
             watchKeys.put(dirKey, dirPath);
         }
     }
@@ -128,7 +127,7 @@ public class FileWatcher extends AbstractVerticle {
 
     private InotifyEvent buildEvent(Path directory, WatchEvent<Path> watchEvent, WatchEvent.Kind<Path> kind) {
         Path fullPath = Paths.get(directory.toString(), watchEvent.context().toString());
-        InotifyEventType eventType = watchEventToEventMap.get(kind);
+        InotifyEventType eventType = inotifyEventToFdbEventTypeMap.get(kind);
         return new InotifyEvent(OffsetDateTime.now(ZoneOffset.UTC), fullPath, eventType);
     }
 
